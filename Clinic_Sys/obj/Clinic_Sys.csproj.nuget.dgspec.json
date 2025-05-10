@@ -1,23 +1,23 @@
 {
   "format": 1,
   "restore": {
-    "M:\\Project\\Clinic_Sys\\Clinic_Sys.csproj": {}
+    "C:\\Users\\lenovo\\source\\repos\\Clinic_Managment_system\\Clinic_Sys\\Clinic_Sys.csproj": {}
   },
   "projects": {
-    "M:\\Project\\Clinic_Sys\\Clinic_Sys.csproj": {
+    "C:\\Users\\lenovo\\source\\repos\\Clinic_Managment_system\\Clinic_Sys\\Clinic_Sys.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "M:\\Project\\Clinic_Sys\\Clinic_Sys.csproj",
+        "projectUniqueName": "C:\\Users\\lenovo\\source\\repos\\Clinic_Managment_system\\Clinic_Sys\\Clinic_Sys.csproj",
         "projectName": "Clinic_Sys",
-        "projectPath": "M:\\Project\\Clinic_Sys\\Clinic_Sys.csproj",
-        "packagesPath": "C:\\Users\\Menna Magdy\\.nuget\\packages\\",
-        "outputPath": "M:\\Project\\Clinic_Sys\\obj\\",
+        "projectPath": "C:\\Users\\lenovo\\source\\repos\\Clinic_Managment_system\\Clinic_Sys\\Clinic_Sys.csproj",
+        "packagesPath": "C:\\Users\\lenovo\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\lenovo\\source\\repos\\Clinic_Managment_system\\Clinic_Sys\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
         ],
         "configFilePaths": [
-          "C:\\Users\\Menna Magdy\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Users\\lenovo\\AppData\\Roaming\\NuGet\\NuGet.Config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
@@ -84,7 +84,7 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.201/PortableRuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.203/PortableRuntimeIdentifierGraph.json"
         }
       }
     }
