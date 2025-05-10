@@ -3,9 +3,9 @@ using Clinic_Sys.Models;
 
 namespace Clinic_Sys.Data
 {
-	public class ClinicDbContext : DbContext
+	public class ApplicationDbContext : DbContext
 	{
-		public ClinicDbContext(DbContextOptions<ClinicDbContext> options) : base(options)
+		public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options)
 		{
 		}
 
