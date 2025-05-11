@@ -24,9 +24,6 @@ namespace Clinic_Sys.Controllers
         public async Task<ActionResult<IEnumerable<ChatSession>>> GetChatSessions()
         {
             return await _context.ChatSessions
-                .Include(c => c.Patient)
-                .Include(c => c.Doctor)
-                .Include(c => c.Messages)
                 .ToListAsync();
         }
 
@@ -35,9 +32,6 @@ namespace Clinic_Sys.Controllers
         public async Task<ActionResult<ChatSession>> GetChatSession(Guid id)
         {
             var chatSession = await _context.ChatSessions
-                .Include(c => c.Patient)
-                .Include(c => c.Doctor)
-                .Include(c => c.Messages)
                 .FirstOrDefaultAsync(c => c.Id == id);
 
             if (chatSession == null)
@@ -57,36 +51,7 @@ namespace Clinic_Sys.Controllers
 
             return CreatedAtAction(nameof(GetChatSession), new { id = chatSession.Id }, chatSession);
         }
-
-        // PUT: api/ChatSession/5
-        [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateChatSession(Guid id, ChatSession chatSession)
-        {
-            if (id != chatSession.Id)
-            {
-                return BadRequest();
-            }
-
-            _context.Entry(chatSession).State = EntityState.Modified;
-
-            try
-            {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!ChatSessionExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
-
-            return NoContent();
-        }
+        
 
         // DELETE: api/ChatSession/5
         [HttpDelete("{id}")]

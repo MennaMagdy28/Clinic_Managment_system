@@ -18,9 +18,9 @@ namespace Clinic_Sys.Models
 
 		public DateTime CreatedAt { get; set; }
 
-		public Patient Patient { get; set; }
+		public Patient? Patient { get; set; }
 
-		public Doctor Doctor { get; set; }
+		public Doctor? Doctor { get; set; }
 
 		[InverseProperty("Session")]
 		public virtual ICollection<ChatMessage> Messages { get; set; } = new List<ChatMessage>();

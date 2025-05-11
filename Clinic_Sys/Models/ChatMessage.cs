@@ -23,7 +23,7 @@ namespace Clinic_Sys.Models
 
 		public bool Seen { get; set; }
 
-		public ChatSession Session { get; set; }
-		public User Sender { get; set; }
+		public ChatSession? Session { get; set; }
+		public User? Sender { get; set; }
 	}
 }

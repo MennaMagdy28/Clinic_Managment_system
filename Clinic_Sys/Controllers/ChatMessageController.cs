@@ -20,30 +20,12 @@ namespace Clinic_Sys.Controllers
         }
 
         // GET: api/ChatMessage
-        [HttpGet]
-        public async Task<ActionResult<IEnumerable<ChatMessage>>> GetChatMessages()
+        [HttpGet("{sessionId}")]
+        public async Task<ActionResult<IEnumerable<ChatMessage>>> GetChatMessages(Guid sessionId)
         {
             return await _context.ChatMessages
-                .Include(c => c.Session)
-                .Include(c => c.Sender)
+                .Where(m => m.SessionId == sessionId)
                 .ToListAsync();
-        }
-
-        // GET: api/ChatMessage/5
-        [HttpGet("{id}")]
-        public async Task<ActionResult<ChatMessage>> GetChatMessage(Guid id)
-        {
-            var chatMessage = await _context.ChatMessages
-                .Include(c => c.Session)
-                .Include(c => c.Sender)
-                .FirstOrDefaultAsync(c => c.Id == id);
-
-            if (chatMessage == null)
-            {
-                return NotFound();
-            }
-
-            return chatMessage;
         }
 
         // POST: api/ChatMessage
@@ -53,7 +35,7 @@ namespace Clinic_Sys.Controllers
             _context.ChatMessages.Add(chatMessage);
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction(nameof(GetChatMessage), new { id = chatMessage.Id }, chatMessage);
+            return Ok(chatMessage);
         }
 
         // PUT: api/ChatMessage/5
