@@ -24,8 +24,6 @@ namespace Clinic_Sys.Controllers
         public async Task<ActionResult<IEnumerable<Appointment>>> GetAppointments()
         {
             return await _context.Appointments
-                .Include(a => a.Patient)
-                .Include(a => a.Doctor)
                 .ToListAsync();
         }
 
@@ -34,8 +32,6 @@ namespace Clinic_Sys.Controllers
         public async Task<ActionResult<Appointment>> GetAppointment(Guid id)
         {
             var appointment = await _context.Appointments
-                .Include(a => a.Patient)
-                .Include(a => a.Doctor)
                 .FirstOrDefaultAsync(a => a.Id == id);
 
             if (appointment == null)
