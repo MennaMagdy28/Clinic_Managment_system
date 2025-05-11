@@ -25,10 +25,18 @@ namespace Clinic_Sys.Models
 
 		public Guid? FollowupId { get; set; }
 
-
+		[ForeignKey("PatientId")]
 		public Patient Patient { get; set; }
+
+		[ForeignKey("DoctorId")]
 		public Doctor Doctor { get; set; }
+
+		[ForeignKey("FollowupId")]
+		[InverseProperty("FollowupAppointments")]
 		public Appointment FollowupAppointment { get; set; }
+
+		public virtual ICollection<Appointment> FollowupAppointments { get; set; } = new List<Appointment>();
+		
 		public MedicalRecord MedicalRecord { get; set; }
 	}
 }

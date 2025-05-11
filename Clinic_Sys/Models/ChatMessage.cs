@@ -10,10 +10,10 @@ namespace Clinic_Sys.Models
 		[Key]
 		public Guid Id { get; set; } = Guid.NewGuid();
 
-		[Required, ForeignKey("Session")]
+		[Required]
 		public Guid SessionId { get; set; }
 
-		[Required, ForeignKey("Sender")]
+		[Required]
 		public Guid SenderId { get; set; }
 
 		[Required]
@@ -23,7 +23,10 @@ namespace Clinic_Sys.Models
 
 		public bool Seen { get; set; }
 
+		[ForeignKey("SessionId")]
 		public ChatSession Session { get; set; }
+
+		[ForeignKey("SenderId")]
 		public User Sender { get; set; }
 	}
 }

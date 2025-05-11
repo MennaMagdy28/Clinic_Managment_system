@@ -29,7 +29,7 @@ namespace Clinic_Sys.Models
 		[Required]
 		public int ExaminationDurationMins { get; set; }
 
+		[ForeignKey("DoctorId")]
 		public Doctor Doctor { get; set; }
-
 	}
 }

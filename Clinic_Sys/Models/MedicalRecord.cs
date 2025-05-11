@@ -11,14 +11,14 @@ namespace Clinic_Sys.Models
 		[Key]
 		public Guid Id { get; set; } = Guid.NewGuid();
 
-		[ForeignKey("Appointment"), Required]
+		[Required]
 		public Guid AttendedAppointmentId { get; set; }
 
 		public string Diagnosis { get; set; }
 
 		public string Prescription { get; set; }
 
-
+		[ForeignKey("AttendedAppointmentId")]
 		public Appointment AttendedAppointment { get; set; }
 
 	}

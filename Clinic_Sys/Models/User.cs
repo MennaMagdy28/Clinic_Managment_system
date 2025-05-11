@@ -17,7 +17,7 @@ namespace Clinic_Sys.Models
 		[Required, EmailAddress]
 		public string Email { get; set; }
 
-		[Required]
+		[Required, DataType(DataType.Password)]
 		public string Password { get; set; }
 
 		[Required]
@@ -26,7 +26,12 @@ namespace Clinic_Sys.Models
 		public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 		public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
 
+
+		[InverseProperty("User")]
 		public Doctor Doctor { get; set; }
+
+
+		[InverseProperty("User")]
 		public Patient Patient { get; set; }
 	}
 }
