@@ -17,7 +17,7 @@ namespace Clinic_Sys.Models
 		[Required]
 		public int RoomNumber { get; set; }
 
-		[Required, ForeignKey("Id")]
+
 		public User User { get; set; }
 		public virtual ICollection<Appointment> Appointments { get; set; } = new List<Appointment>();
 		public virtual ICollection<Schedule> Schedules { get; set; } = new List<Schedule>();

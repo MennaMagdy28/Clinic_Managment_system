@@ -27,9 +27,9 @@ namespace Clinic_Sys.Data
 				.HasOne(a => a.FollowupAppointment)
 				.WithMany(a => a.FollowupAppointments)
 				.HasForeignKey(a => a.FollowupId)
-				.OnDelete(DeleteBehavior.Restrict); // Prevent circular cascade delete
+				.OnDelete(DeleteBehavior.Restrict);
 
-			// User-Doctor and User-Patient one-to-one
+			// User-Doctor/Patient one-to-one
 			modelBuilder.Entity<User>()
 				.HasOne(u => u.Doctor)
 				.WithOne(d => d.User)

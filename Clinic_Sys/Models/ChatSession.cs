@@ -10,16 +10,16 @@ namespace Clinic_Sys.Models
 		[Key]
 		public Guid Id { get; set; } = Guid.NewGuid();
 
+		[Required, ForeignKey("Patient")]
 		public Guid PatientId { get; set; }
 
+		[Required, ForeignKey("Doctor")]
 		public Guid DoctorId { get; set; }
 
 		public DateTime CreatedAt { get; set; }
 
-		[ForeignKey("PatientId")]
 		public Patient Patient { get; set; }
 
-		[ForeignKey("DoctorId")]
 		public Doctor Doctor { get; set; }
 
 		[InverseProperty("Session")]

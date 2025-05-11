@@ -11,7 +11,7 @@ namespace Clinic_Sys.Models
 		[Key]
 		public Guid Id { get; set; } = Guid.NewGuid();
 
-		[Required]
+		[Required, ForeignKey("Doctor")]
 		public Guid DoctorId { get; set; }
 
 		[Required]
@@ -29,7 +29,6 @@ namespace Clinic_Sys.Models
 		[Required]
 		public int ExaminationDurationMins { get; set; }
 
-		[ForeignKey("DoctorId")]
 		public Doctor Doctor { get; set; }
 	}
 }

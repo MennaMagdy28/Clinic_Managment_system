@@ -11,10 +11,10 @@ namespace Clinic_Sys.Models
 		[Key]
 		public Guid Id { get; set; } = Guid.NewGuid();
 
-		[Required]
+		[Required, ForeignKey("Patient")]
 		public Guid PatientId { get; set; }
 
-		[Required]
+		[Required, ForeignKey("Doctor")]
 		public Guid DoctorId { get; set; }
 
 		[Required]
@@ -23,20 +23,13 @@ namespace Clinic_Sys.Models
 		[Required]
 		public AppointmentStatus Status { get; set; } // in Enums.AppointmentStatus: Scheduled, Completed, Canceled
 
+		[ForeignKey("Appointment")]
 		public Guid? FollowupId { get; set; }
 
-		[ForeignKey("PatientId")]
 		public Patient Patient { get; set; }
-
-		[ForeignKey("DoctorId")]
 		public Doctor Doctor { get; set; }
-
-		[ForeignKey("FollowupId")]
-		[InverseProperty("FollowupAppointments")]
 		public Appointment FollowupAppointment { get; set; }
-
 		public virtual ICollection<Appointment> FollowupAppointments { get; set; } = new List<Appointment>();
-		
 		public MedicalRecord MedicalRecord { get; set; }
 	}
 }
