@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Linq;
+using Clinic_Sys.Data;
 
 namespace Clinic_Sys.Controllers
 {
