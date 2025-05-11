@@ -24,7 +24,6 @@ namespace Clinic_Sys.Controllers
         public async Task<ActionResult<IEnumerable<MedicalRecord>>> GetMedicalRecords()
         {
             return await _context.MedicalRecords
-                .Include(m => m.AttendedAppointment)
                 .ToListAsync();
         }
 

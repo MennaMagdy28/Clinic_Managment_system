@@ -18,7 +18,7 @@ namespace Clinic_Sys.Models
 
 		public string Prescription { get; set; }
 
-		public Appointment AttendedAppointment { get; set; }
+		public Appointment? AttendedAppointment { get; set; }
 
 	}
 }
