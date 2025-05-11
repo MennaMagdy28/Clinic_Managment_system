@@ -31,7 +31,7 @@ namespace Clinic_Sys.Controllers
 
         // GET: api/Appointment/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<Appointment>> GetAppointment(string id)
+        public async Task<ActionResult<Appointment>> GetAppointment(Guid id)
         {
             var appointment = await _context.Appointments
                 .Include(a => a.Patient)
@@ -58,7 +58,7 @@ namespace Clinic_Sys.Controllers
 
         // PUT: api/Appointment/5
         [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateAppointment(string id, Appointment appointment)
+        public async Task<IActionResult> UpdateAppointment(Guid id, Appointment appointment)
         {
             if (id != appointment.Id)
             {
@@ -88,7 +88,7 @@ namespace Clinic_Sys.Controllers
 
         // DELETE: api/Appointment/5
         [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteAppointment(string id)
+        public async Task<IActionResult> DeleteAppointment(Guid id)
         {
             var appointment = await _context.Appointments.FindAsync(id);
             if (appointment == null)
@@ -102,9 +102,9 @@ namespace Clinic_Sys.Controllers
             return NoContent();
         }
 
-        private bool AppointmentExists(string id)
+        private bool AppointmentExists(Guid id)
         {
             return _context.Appointments.Any(e => e.Id == id);
         }
     }
-} 
+}

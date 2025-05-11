@@ -30,7 +30,7 @@ namespace Clinic_Sys.Controllers
 
         // GET: api/Schedule/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<Schedule>> GetSchedule(string id)
+        public async Task<ActionResult<Schedule>> GetSchedule(Guid id)
         {
             var schedule = await _context.Schedules
                 .Include(s => s.Doctor)
@@ -56,7 +56,7 @@ namespace Clinic_Sys.Controllers
 
         // PUT: api/Schedule/5
         [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateSchedule(string id, Schedule schedule)
+        public async Task<IActionResult> UpdateSchedule(Guid id, Schedule schedule)
         {
             if (id != schedule.Id)
             {
@@ -86,7 +86,7 @@ namespace Clinic_Sys.Controllers
 
         // DELETE: api/Schedule/5
         [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteSchedule(string id)
+        public async Task<IActionResult> DeleteSchedule(Guid id)
         {
             var schedule = await _context.Schedules.FindAsync(id);
             if (schedule == null)
@@ -100,7 +100,7 @@ namespace Clinic_Sys.Controllers
             return NoContent();
         }
 
-        private bool ScheduleExists(string id)
+        private bool ScheduleExists(Guid id)
         {
             return _context.Schedules.Any(e => e.Id == id);
         }

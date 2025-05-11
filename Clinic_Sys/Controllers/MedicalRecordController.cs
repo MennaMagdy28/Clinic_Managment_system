@@ -30,7 +30,7 @@ namespace Clinic_Sys.Controllers
 
         // GET: api/MedicalRecord/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<MedicalRecord>> GetMedicalRecord(string id)
+        public async Task<ActionResult<MedicalRecord>> GetMedicalRecord(Guid id)
         {
             var medicalRecord = await _context.MedicalRecords
                 .Include(m => m.AttendedAppointment)
@@ -56,7 +56,7 @@ namespace Clinic_Sys.Controllers
 
         // PUT: api/MedicalRecord/5
         [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateMedicalRecord(string id, MedicalRecord medicalRecord)
+        public async Task<IActionResult> UpdateMedicalRecord(Guid id, MedicalRecord medicalRecord)
         {
             if (id != medicalRecord.Id)
             {
@@ -86,7 +86,7 @@ namespace Clinic_Sys.Controllers
 
         // DELETE: api/MedicalRecord/5
         [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteMedicalRecord(string id)
+        public async Task<IActionResult> DeleteMedicalRecord(Guid id)
         {
             var medicalRecord = await _context.MedicalRecords.FindAsync(id);
             if (medicalRecord == null)
@@ -100,7 +100,7 @@ namespace Clinic_Sys.Controllers
             return NoContent();
         }
 
-        private bool MedicalRecordExists(string id)
+        private bool MedicalRecordExists(Guid id)
         {
             return _context.MedicalRecords.Any(e => e.Id == id);
         }

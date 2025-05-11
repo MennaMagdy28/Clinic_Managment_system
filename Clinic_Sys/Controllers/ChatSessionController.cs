@@ -32,7 +32,7 @@ namespace Clinic_Sys.Controllers
 
         // GET: api/ChatSession/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<ChatSession>> GetChatSession(string id)
+        public async Task<ActionResult<ChatSession>> GetChatSession(Guid id)
         {
             var chatSession = await _context.ChatSessions
                 .Include(c => c.Patient)
@@ -60,7 +60,7 @@ namespace Clinic_Sys.Controllers
 
         // PUT: api/ChatSession/5
         [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateChatSession(string id, ChatSession chatSession)
+        public async Task<IActionResult> UpdateChatSession(Guid id, ChatSession chatSession)
         {
             if (id != chatSession.Id)
             {
@@ -90,7 +90,7 @@ namespace Clinic_Sys.Controllers
 
         // DELETE: api/ChatSession/5
         [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteChatSession(string id)
+        public async Task<IActionResult> DeleteChatSession(Guid id)
         {
             var chatSession = await _context.ChatSessions.FindAsync(id);
             if (chatSession == null)
@@ -104,7 +104,7 @@ namespace Clinic_Sys.Controllers
             return NoContent();
         }
 
-        private bool ChatSessionExists(string id)
+        private bool ChatSessionExists(Guid id)
         {
             return _context.ChatSessions.Any(e => e.Id == id);
         }
