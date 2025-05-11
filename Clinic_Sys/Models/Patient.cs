@@ -9,7 +9,7 @@ namespace Clinic_Sys.Models
 	public class Patient
 	{
 		[Key, ForeignKey("User")]
-		public string Id { get; set; }
+		public Guid Id { get; set; }
 
 		[Required]
 		public Gender Gender { get; set; } // in Enums.Gender: Male, Female

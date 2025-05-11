@@ -5,11 +5,10 @@ using System.IO;
 
 namespace Clinic_Sys.Data
 {
-	public class ClinicDbContextFactory : IDesignTimeDbContextFactory<ClinicDbContext>
+	public class ClinicDbContextFactory : IDesignTimeDbContextFactory<ApplicationDbContext>
 	{
-		public ClinicDbContext CreateDbContext(string[] args)
+		public ApplicationDbContext CreateDbContext(string[] args)
 		{
-
 			var configuration = new ConfigurationBuilder()
 				.SetBasePath(Directory.GetCurrentDirectory())
 				.AddJsonFile("appsettings.json")
@@ -17,10 +16,10 @@ namespace Clinic_Sys.Data
 
 			var connectionString = configuration.GetConnectionString("DefaultConnection");
 
-			var optionsBuilder = new DbContextOptionsBuilder<ClinicDbContext>();
+			var optionsBuilder = new DbContextOptionsBuilder<ApplicationDbContext>();
 			optionsBuilder.UseNpgsql(connectionString);
 
-			return new ClinicDbContext(optionsBuilder.Options);
+			return new ApplicationDbContext(optionsBuilder.Options);
 		}
 	}
 }

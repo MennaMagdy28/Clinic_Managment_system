@@ -9,22 +9,25 @@ namespace Clinic_Sys.Models
 	public class Schedule
 	{
 		[Key]
-		public string Id { get; set; }
+		public Guid Id { get; set; } = Guid.NewGuid();
 
 		[Required]
-		public string DoctorId { get; set; }
+		public Guid DoctorId { get; set; }
 
 		[Required]
 		public WeekDay Day { get; set; } // in Enums/WeekDay
 
 		[Required]
-		public DateTime StartTime;
+		public TimeSpan StartTime { get; set; }
 
 		[Required]
-		public DateTime EndTime;
+		public TimeSpan EndTime { get; set; }
 
 		[Required]
-		public int DurationMinutes { get; set; }
+		public int BreakDurationMins { get; set; } // in minutes
+
+		[Required]
+		public int ExaminationDurationMins { get; set; }
 
 		public Doctor Doctor { get; set; }
 

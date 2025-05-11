@@ -8,11 +8,11 @@ namespace Clinic_Sys.Models
 	public class ChatSession
 	{
 		[Key]
-		public string Id { get; set; }
+		public Guid Id { get; set; } = Guid.NewGuid();
 
-		public string PatientId { get; set; }
+		public Guid PatientId { get; set; }
 
-		public string DoctorId { get; set; }
+		public Guid DoctorId { get; set; }
 
 		public DateTime CreatedAt { get; set; }
 

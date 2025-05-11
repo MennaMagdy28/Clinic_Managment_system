@@ -9,7 +9,7 @@ namespace Clinic_Sys.Models
 	public class User
 	{
 		[Key]
-		public string Id { get; set; }
+		public Guid Id { get; set; } = Guid.NewGuid();
 
 		[Required]
 		public string Name { get; set; }
@@ -26,9 +26,7 @@ namespace Clinic_Sys.Models
 		public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 		public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
 
-
-		public Doctor doctor { get; set; }
-		public Patient patient { get; set; }
-
+		public Doctor Doctor { get; set; }
+		public Patient Patient { get; set; }
 	}
 }

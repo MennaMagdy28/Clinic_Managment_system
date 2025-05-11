@@ -9,13 +9,13 @@ namespace Clinic_Sys.Models
 	public class Appointment
 	{
 		[Key]
-		public string Id { get; set; }
+		public Guid Id { get; set; } = Guid.NewGuid();
 
 		[Required]
-		public string PatientId { get; set; }
+		public Guid PatientId { get; set; }
 
 		[Required]
-		public string DoctorId { get; set; }
+		public Guid DoctorId { get; set; }
 
 		[Required]
 		public DateTime AppointmentDate { get; set; }
@@ -23,7 +23,7 @@ namespace Clinic_Sys.Models
 		[Required]
 		public AppointmentStatus Status { get; set; } // in Enums.AppointmentStatus: Scheduled, Completed, Canceled
 
-		public string? FollowupId { get; set; }
+		public Guid? FollowupId { get; set; }
 
 
 		public Patient Patient { get; set; }

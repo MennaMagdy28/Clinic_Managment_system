@@ -8,15 +8,18 @@ namespace Clinic_Sys.Models
 	public class ChatMessage
 	{
 		[Key]
-		public string Id { get; set; }
+		public Guid Id { get; set; } = Guid.NewGuid();
 
-		public string SessionId { get; set; }
+		[Required, ForeignKey("Session")]
+		public Guid SessionId { get; set; }
 
-		public string SenderId { get; set; }
+		[Required, ForeignKey("Sender")]
+		public Guid SenderId { get; set; }
 
+		[Required]
 		public string Message { get; set; }
 
-		public DateTime Timestamp { get; set; }
+		public DateTime Timestamp { get; set; } = DateTime.UtcNow;
 
 		public bool Seen { get; set; }
 

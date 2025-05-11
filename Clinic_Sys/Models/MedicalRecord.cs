@@ -9,10 +9,10 @@ namespace Clinic_Sys.Models
 	public class MedicalRecord
 	{
 		[Key]
-		public string Id { get; set; }
+		public Guid Id { get; set; } = Guid.NewGuid();
 
 		[ForeignKey("Appointment"), Required]
-		public string AttendedAppointmentId { get; set; }
+		public Guid AttendedAppointmentId { get; set; }
 
 		public string Diagnosis { get; set; }
 

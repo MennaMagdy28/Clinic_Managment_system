@@ -9,7 +9,7 @@ namespace Clinic_Sys.Models
 	public class Doctor
 	{
 		[Key, ForeignKey("User")]
-		public string Id { get; set; }
+		public Guid Id { get; set; }
 		[Required]
 		public string Specialization { get; set; }
 		[Required]

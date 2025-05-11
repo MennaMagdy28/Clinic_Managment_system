@@ -31,20 +31,21 @@ namespace Clinic_Sys.Data
 
 			// User-Doctor and User-Patient one-to-one
 			modelBuilder.Entity<User>()
-				.HasOne(u => u.doctor)
+				.HasOne(u => u.Doctor)
 				.WithOne()
 				.HasForeignKey<Doctor>(d => d.Id);
 
 			modelBuilder.Entity<User>()
-				.HasOne(u => u.patient)
+				.HasOne(u => u.Patient)
 				.WithOne()
 				.HasForeignKey<Patient>(p => p.Id);
 
-			// Appointment-MedicalRecord one-to-one
+			// Appointment-MedicalRecord one-to-one with cascade delete
 			modelBuilder.Entity<Appointment>()
 				.HasOne(a => a.MedicalRecord)
 				.WithOne(m => m.AttendedAppointment)
-				.HasForeignKey<MedicalRecord>(m => m.AttendedAppointmentId);
+				.HasForeignKey<MedicalRecord>(m => m.AttendedAppointmentId)
+				.OnDelete(DeleteBehavior.Cascade);
 		}
 	}
 }
