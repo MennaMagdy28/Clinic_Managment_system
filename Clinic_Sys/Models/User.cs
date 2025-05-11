@@ -28,9 +28,9 @@ namespace Clinic_Sys.Models
 
 
 		[InverseProperty("User")]
-		public Doctor Doctor { get; set; }
+		public Doctor? Doctor { get; set; }
 
 		[InverseProperty("User")]
-		public Patient Patient { get; set; }
+		public Patient? Patient { get; set; }
 	}
 }

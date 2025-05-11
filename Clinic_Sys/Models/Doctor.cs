@@ -18,7 +18,7 @@ namespace Clinic_Sys.Models
 		public int RoomNumber { get; set; }
 
 
-		public User User { get; set; }
+		public User? User { get; set; }
 		public virtual ICollection<Appointment> Appointments { get; set; } = new List<Appointment>();
 		public virtual ICollection<Schedule> Schedules { get; set; } = new List<Schedule>();
 		public virtual ICollection<ChatSession> ChatSessions { get; set; } = new List<ChatSession>();
