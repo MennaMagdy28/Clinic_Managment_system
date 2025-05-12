@@ -5,22 +5,31 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Linq;
 using Clinic_Sys.Data;
+using Microsoft.AspNetCore.Identity;
+using Clinic_Sys.Authorization;
+using Clinic_Sys.Enums;
+using System;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Clinic_Sys.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize] // Require authentication for all endpoints
     public class UserController : ControllerBase
     {
+        private readonly UserManager<User> _userManager;
         private readonly ApplicationDbContext _context;
 
-        public UserController(ApplicationDbContext context)
+        public UserController(UserManager<User> userManager, ApplicationDbContext context)
         {
+            _userManager = userManager;
             _context = context;
         }
 
         // GET: api/User
         [HttpGet]
+        [AuthorizeRoles(UserRole.Admin)] // Only admins can list all users
         public async Task<ActionResult<IEnumerable<User>>> GetUsers()
         {
             return await _context.Users
@@ -33,6 +42,18 @@ namespace Clinic_Sys.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<User>> GetUser(Guid id)
         {
+            var currentUser = await _userManager.GetUserAsync(User);
+            if (currentUser == null)
+            {
+                return Unauthorized();
+            }
+
+            // Users can only access their own profile unless they're an admin
+            if (currentUser.Id != id && currentUser.Role != UserRole.Admin)
+            {
+                return Forbid();
+            }
+
             var user = await _context.Users
                 .Include(u => u.Doctor)
                 .Include(u => u.Patient)
@@ -58,29 +79,54 @@ namespace Clinic_Sys.Controllers
 
         // PUT: api/User/5
         [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateUser(Guid id, User user)
+        public async Task<IActionResult> UpdateUser(Guid id, UserUpdateModel model)
         {
-            if (id != user.Id)
+            var currentUser = await _userManager.GetUserAsync(User);
+            if (currentUser == null)
             {
-                return BadRequest();
+                return Unauthorized();
             }
 
-            _context.Entry(user).State = EntityState.Modified;
-
-            try
+            // Users can only update their own profile unless they're an admin
+            if (currentUser.Id != id && currentUser.Role != UserRole.Admin)
             {
-                await _context.SaveChangesAsync();
+                return Forbid();
             }
-            catch (DbUpdateConcurrencyException)
+
+            var user = await _userManager.FindByIdAsync(id.ToString());
+            if (user == null)
             {
-                if (!UserExists(id))
+                return NotFound();
+            }
+
+            // Update user properties
+            user.Name = model.Name;
+
+            // Handle email update
+            if (!string.IsNullOrEmpty(model.Email) && model.Email != user.Email)
+            {
+                // Check if email is already taken
+                var existingUser = await _userManager.FindByEmailAsync(model.Email);
+                if (existingUser != null)
                 {
-                    return NotFound();
+                    return BadRequest(new { message = "Email is already taken" });
                 }
-                else
-                {
-                    throw;
-                }
+
+                // Update email
+                user.Email = model.Email;
+                user.UserName = model.Email; // Username should match email
+            }
+
+            // Only admins can change roles
+            if (currentUser.Role == UserRole.Admin && model.Role.HasValue)
+            {
+                user.Role = model.Role.Value;
+            }
+
+            var result = await _userManager.UpdateAsync(user);
+            if (!result.Succeeded)
+            {
+                return BadRequest(result.Errors);
             }
 
             return NoContent();
@@ -88,23 +134,29 @@ namespace Clinic_Sys.Controllers
 
         // DELETE: api/User/5
         [HttpDelete("{id}")]
+        [AuthorizeRoles(UserRole.Admin)] // Only admins can delete users
         public async Task<IActionResult> DeleteUser(Guid id)
         {
-            var user = await _context.Users.FindAsync(id);
+            var user = await _userManager.FindByIdAsync(id.ToString());
             if (user == null)
             {
                 return NotFound();
             }
 
-            _context.Users.Remove(user);
-            await _context.SaveChangesAsync();
+            var result = await _userManager.DeleteAsync(user);
+            if (!result.Succeeded)
+            {
+                return BadRequest(result.Errors);
+            }
 
             return NoContent();
         }
+    }
 
-        private bool UserExists(Guid id)
-        {
-            return _context.Users.Any(e => e.Id == id);
-        }
+    public class UserUpdateModel
+    {
+        public string Name { get; set; }
+        public string Email { get; set; }
+        public UserRole? Role { get; set; }
     }
 }

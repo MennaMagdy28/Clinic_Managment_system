@@ -7,12 +7,16 @@ using System.Linq;
 using Clinic_Sys.Data;
 using Clinic_Sys.Enums;
 using Clinic_Sys.Services.Interfaces;
+using Clinic_Sys.Authorization;
+using Microsoft.AspNetCore.Authorization;
+
 
 namespace Clinic_Sys.Controllers
 {
 
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class ScheduleController : ControllerBase
     {
         private readonly ApplicationDbContext _context;

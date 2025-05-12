@@ -285,5 +285,10 @@ paket-files/
 
 # FAKE - F# Make
 .fake/
+
 appsettings.json
 appsettings.Development.json
+
+
+appsettings.json
+appsettings.*.json
