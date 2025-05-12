@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Clinic_Sys.Models;
 using Clinic_Sys.Enums;
+using Clinic_Sys.Models.DTOs;
 
 namespace Clinic_Sys.Services.Interfaces
 {
@@ -10,5 +11,6 @@ namespace Clinic_Sys.Services.Interfaces
     {
         Task<Dictionary<AppointmentStatus, List<Appointment>>> GroupAndSortAppointments(Guid? doctorId, DateTime? date);
         Task<List<Appointment>> GetFilteredAppointments(Guid? doctorId, DateTime? date);
+        Task<List<TimeSlot>> GetAvailableTimeSlots(Guid doctorId, DateTime date);
     }
 }
