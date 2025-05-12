@@ -5,42 +5,44 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Linq;
 using Clinic_Sys.Data;
+using Clinic_Sys.Enums;
+using Clinic_Sys.Services.Interfaces;
 
 namespace Clinic_Sys.Controllers
 {
+
     [Route("api/[controller]")]
     [ApiController]
     public class ScheduleController : ControllerBase
     {
         private readonly ApplicationDbContext _context;
+        private readonly IScheduleService _scheduleService;
 
-        public ScheduleController(ApplicationDbContext context)
+        public ScheduleController(ApplicationDbContext context, IScheduleService scheduleService)
         {
             _context = context;
-        }
-
-        // GET: api/Schedule
-        [HttpGet]
-        public async Task<ActionResult<IEnumerable<Schedule>>> GetSchedules()
-        {
-            return await _context.Schedules
-                .ToListAsync();
+            _scheduleService = scheduleService;
         }
 
         // GET: api/Schedule/5
-        [HttpGet("{id}")]
-        public async Task<ActionResult<Schedule>> GetSchedule(Guid id)
+        [HttpGet("doctor/{doctorId}")]
+        public async Task<ActionResult<List<Schedule>>> GetScheduleByDoctorId(Guid doctorId)
         {
-            var schedule = await _context.Schedules
-                .FirstOrDefaultAsync(s => s.Id == id);
+            var schedule = await _scheduleService.GetScheduleByDoctorId(doctorId);
+            return Ok(schedule);
+        }
 
+        [HttpGet("doctor/{doctorId}/day/{date}")]
+        public async Task<ActionResult<Schedule>> GetScheduleByDate(Guid doctorId, DateTime date)
+        {
+            var schedule = await _scheduleService.GetScheduleByDate(doctorId, date);
             if (schedule == null)
             {
                 return NotFound();
             }
-
-            return schedule;
+            return Ok(schedule);
         }
+
 
         // POST: api/Schedule
         [HttpPost]
@@ -49,7 +51,7 @@ namespace Clinic_Sys.Controllers
             _context.Schedules.Add(schedule);
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction(nameof(GetSchedule), new { id = schedule.Id }, schedule);
+            return Ok(schedule);
         }
 
         // PUT: api/Schedule/5
@@ -103,4 +105,4 @@ namespace Clinic_Sys.Controllers
             return _context.Schedules.Any(e => e.Id == id);
         }
     }
-} 
+}
