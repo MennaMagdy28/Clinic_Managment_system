@@ -27,7 +27,6 @@ namespace Clinic_Sys.Controllers
         public async Task<ActionResult<IEnumerable<Schedule>>> GetSchedules()
         {
             return await _context.Schedules
-                .Include(s => s.Doctor)
                 .ToListAsync();
         }
 
@@ -36,7 +35,6 @@ namespace Clinic_Sys.Controllers
         public async Task<ActionResult<Schedule>> GetSchedule(Guid id)
         {
             var schedule = await _context.Schedules
-                .Include(s => s.Doctor)
                 .FirstOrDefaultAsync(s => s.Id == id);
 
             if (schedule == null)

@@ -29,6 +29,6 @@ namespace Clinic_Sys.Models
 		[Required]
 		public int ExaminationDurationMins { get; set; }
 
-		public Doctor Doctor { get; set; }
+		public Doctor? Doctor { get; set; }
 	}
 }
