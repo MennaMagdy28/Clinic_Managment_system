@@ -104,9 +104,23 @@ namespace Clinic_Sys.Controllers
             return NoContent();
         }
 
+        [HttpGet("search")]
+        public async Task<ActionResult<IEnumerable<Doctor>>> SearchDoctors(string query)
+        {
+            if (string.IsNullOrEmpty(query))
+            {
+                return BadRequest("Query parameter is required.");
+            }
+            var doctors = await _context.Doctors
+                .Where(d => d.User.Name.Contains(query) || d.Specialization.Contains(query))
+                .ToListAsync();
+
+            return doctors;
+        }
+
         private bool DoctorExists(Guid id)
         {
             return _context.Doctors.Any(e => e.Id == id);
         }
     }
-} 
+}
