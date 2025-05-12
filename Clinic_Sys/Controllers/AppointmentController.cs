@@ -9,6 +9,7 @@ using Clinic_Sys.Services.Interfaces;
 using Clinic_Sys.Enums;
 
 
+
 namespace Clinic_Sys.Controllers
 {
     [Route("api/[controller]")]
@@ -17,26 +18,12 @@ namespace Clinic_Sys.Controllers
     {
         private readonly ApplicationDbContext _context;
         private readonly IScheduleService _scheduleService;
-        public AppointmentController(ApplicationDbContext context, IScheduleService scheduleService)
+        private readonly IAppointmentService _appointmentService;
+        public AppointmentController(ApplicationDbContext context, IScheduleService scheduleService, IAppointmentService appointmentService)
         {
             _context = context;
             _scheduleService = scheduleService;
-        }
-
-        // GET: api/Appointment
-        [HttpGet]
-        public async Task<ActionResult<IEnumerable<Appointment>>> GetAppointments()
-        {
-            return await _context.Appointments
-                .ToListAsync();
-        }
-
-        [HttpGet("appointments/doctor/{doctorId}")]
-        public async Task<List<Appointment>> GetAppointmentsByDoctor(Guid doctorId)
-        {
-            return await _context.Appointments
-                .Where(a => a.DoctorId == doctorId)
-                .ToListAsync();
+            _appointmentService = appointmentService;
         }
 
         // GET: api/Appointment/5
@@ -64,47 +51,14 @@ namespace Clinic_Sys.Controllers
             return CreatedAtAction(nameof(GetAppointment), new { id = appointment.Id }, appointment);
         }
 
-        // PUT: api/Appointment/5
-        [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateAppointment(Guid id, Appointment appointment)
-        {
-            if (id != appointment.Id)
-            {
-                return BadRequest();
-            }
-
-            _context.Entry(appointment).State = EntityState.Modified;
-
-            try
-            {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!AppointmentExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
-
-            return NoContent();
-        }
 
         // DELETE: api/Appointment/5
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteAppointment(Guid id)
         {
-            var appointment = await _context.Appointments.FindAsync(id);
-            if (appointment == null)
-            {
-                return NotFound();
-            }
+            var appointment = await GetAppointment(id);
 
-            _context.Appointments.Remove(appointment);
+            _context.Appointments.Remove(appointment.Value);
             await _context.SaveChangesAsync();
 
             return NoContent();
@@ -120,7 +74,7 @@ namespace Clinic_Sys.Controllers
         [HttpGet("appointments/doctor/{doctorId}/date/{date}")]
         public async Task<ActionResult<AvailabilityResponse>> AvailableTimeSlot(Guid doctorId, DateTime date)
         {
-            var appointments = await GetAppointmentsByDoctor(doctorId);
+            var appointments = await _appointmentService.GetFilteredAppointments(doctorId, date);
             var schedule = await _scheduleService.GetScheduleByDate(doctorId, date);
 
             //schedule is null if the doctor has no schedule for the day
@@ -153,7 +107,8 @@ namespace Clinic_Sys.Controllers
                 a.AppointmentDate.Date == date.Date &&
                 a.Status == AppointmentStatus.Scheduled &&
                 ((date >= a.AppointmentDate && date < a.AppointmentDate.AddMinutes(totalSlotDuration)) ||
-                (date.AddMinutes(totalSlotDuration) > a.AppointmentDate && date.AddMinutes(totalSlotDuration) <= a.AppointmentDate.AddMinutes(totalSlotDuration)))
+                (date.AddMinutes(totalSlotDuration) > a.AppointmentDate &&
+                 date.AddMinutes(totalSlotDuration) <= a.AppointmentDate.AddMinutes(totalSlotDuration)))
             );
             if (hasOverlap)
                 return Ok(new AvailabilityResponse {
@@ -193,17 +148,15 @@ namespace Clinic_Sys.Controllers
         [HttpPut("appointments/{id}")]
         public async Task<IActionResult> RescheduleAppointment(Guid id, DateTime newDate)
         {
-            var appointment = await _context.Appointments.FindAsync(id);
-            if (appointment == null)
-                return NotFound();
+            var appointment = await GetAppointment(id);
 
-            var hasOverlap = await AvailableTimeSlot(appointment.DoctorId, newDate);
+            var hasOverlap = await AvailableTimeSlot(appointment.Value.DoctorId, newDate);
             if (!(hasOverlap.Value.Available))
             {
                 return BadRequest($"{hasOverlap.Value.Message}. Please choose a different time.");
             }
 
-            appointment.AppointmentDate = newDate;
+            appointment.Value.AppointmentDate = newDate;
             await _context.SaveChangesAsync();
             return Ok(appointment);
         }
@@ -214,15 +167,13 @@ namespace Clinic_Sys.Controllers
         [HttpPut("appointments/{id}/cancel")]
         public async Task<IActionResult> CancelAppointment(Guid id)
         {
-            var appointment = await _context.Appointments.FindAsync(id);
-            if (appointment == null)
-                return NotFound();
+            var appointment = await GetAppointment(id);
 
-            if (appointment.Status == AppointmentStatus.Completed || appointment.Status == AppointmentStatus.Cancelled)
+            if (appointment.Value.Status == AppointmentStatus.Completed || appointment.Value.Status == AppointmentStatus.Cancelled)
             {
                 return BadRequest("Cannot cancel an appointment that is already completed or cancelled.");
             }
-            appointment.Status = AppointmentStatus.Cancelled;
+            appointment.Value.Status = AppointmentStatus.Cancelled;
             await _context.SaveChangesAsync();
             return Ok(appointment);
         }

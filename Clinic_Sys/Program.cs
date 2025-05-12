@@ -16,7 +16,7 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 builder.Services.AddScoped<IScheduleService, ScheduleService>();
-
+builder.Services.AddScoped<IAppointmentService, AppointmentService>();
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.

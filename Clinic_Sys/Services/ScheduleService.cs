@@ -7,6 +7,7 @@ using Clinic_Sys.Models;
 using Clinic_Sys.Services.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using Clinic_Sys.Enums;
+using Clinic_Sys.Data;
 
 namespace Clinic_Sys.Services
 {
