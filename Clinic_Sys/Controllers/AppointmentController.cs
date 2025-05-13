@@ -76,7 +76,7 @@ namespace Clinic_Sys.Controllers
         //custom methods
 
         [HttpPost("appointments/doctor/{doctorId}/date/{date}")]
-        [AuthorizeRoles(UserRole.Admin, UserRole.Patient)]
+        [AuthorizeRoles(UserRole.Patient)]
         public async Task<ActionResult<bool>> CreateAppointment(Guid doctorId, DateTime date)
         {
             var hasOverlap = await _appointmentService.AvailableTimeSlot(doctorId, date);
