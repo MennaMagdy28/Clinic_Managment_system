@@ -15,7 +15,7 @@ namespace Clinic_Sys.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    // [Authorize]
+    [Authorize]
     public class AppointmentController : ControllerBase
     {
         private readonly ApplicationDbContext _context;
@@ -134,7 +134,7 @@ namespace Clinic_Sys.Controllers
             {
                 DoctorId = doctorId,
                 AppointmentDate = date,
-                PatientId = Guid.Parse("f8722580-d8b1-4f9a-a7ce-4950d387b9c9"),
+                PatientId = userId,
                 Status = AppointmentStatus.Scheduled
             };
             _context.Appointments.Add(appointment);
