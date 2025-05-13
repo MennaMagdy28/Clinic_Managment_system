@@ -30,6 +30,7 @@ namespace Clinic_Sys.Controllers
 
         // GET: api/Schedule/5
         [HttpGet("doctor/{doctorId}")]
+        [AuthorizeRoles(UserRole.Admin, UserRole.Patient)]
         public async Task<ActionResult<List<Schedule>>> GetScheduleByDoctorId(Guid doctorId)
         {
             var schedule = await _scheduleService.GetScheduleByDoctorId(doctorId);
@@ -37,6 +38,7 @@ namespace Clinic_Sys.Controllers
         }
 
         [HttpGet("doctor/{doctorId}/day/{date}")]
+        [AuthorizeRoles(UserRole.Admin, UserRole.Patient)]
         public async Task<ActionResult<Schedule>> GetScheduleByDate(Guid doctorId, DateTime date)
         {
             var schedule = await _scheduleService.GetScheduleByDate(doctorId, date);
@@ -50,6 +52,7 @@ namespace Clinic_Sys.Controllers
 
         // POST: api/Schedule
         [HttpPost]
+        [AuthorizeRoles(UserRole.Admin)]
         public async Task<ActionResult<Schedule>> CreateSchedule(Schedule schedule)
         {
             _context.Schedules.Add(schedule);
@@ -60,6 +63,7 @@ namespace Clinic_Sys.Controllers
 
         // PUT: api/Schedule/5
         [HttpPut("{id}")]
+        [AuthorizeRoles(UserRole.Admin)]
         public async Task<IActionResult> UpdateSchedule(Guid id, Schedule schedule)
         {
             if (id != schedule.Id)
@@ -90,6 +94,7 @@ namespace Clinic_Sys.Controllers
 
         // DELETE: api/Schedule/5
         [HttpDelete("{id}")]
+        [AuthorizeRoles(UserRole.Admin)]
         public async Task<IActionResult> DeleteSchedule(Guid id)
         {
             var schedule = await _context.Schedules.FindAsync(id);

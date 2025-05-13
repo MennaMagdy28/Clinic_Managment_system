@@ -37,7 +37,7 @@ namespace Clinic_Sys.Services
 
             return await query.ToListAsync();
         }
-        
+
         public async Task<Dictionary<AppointmentStatus, List<Appointment>>> GroupAndSortAppointments(
             Guid? doctorId = null, DateTime? date = null)
         {
@@ -113,6 +113,52 @@ namespace Clinic_Sys.Services
             }
 
             return availableSlots;
+        }
+
+        public async Task<AvailabilityResponse> AvailableTimeSlot(Guid doctorId, DateTime date){
+            var appointments = await GetFilteredAppointments(doctorId, date);
+            var schedule = await _scheduleService.GetScheduleByDate(doctorId, date);
+
+            //schedule is null if the doctor has no schedule for the day
+            if (schedule == null)
+                return (new AvailabilityResponse {
+                    Available = false,
+                    Message = "Doctor has no schedule for this day"
+                });
+
+            //check if the date is within the doctor's schedule
+            var dayStart = date.Date.Add(schedule.StartTime);
+            var dayEnd = date.Date.Add(schedule.EndTime);
+            if (date < dayStart || date > dayEnd)
+                return (new AvailabilityResponse {
+                    Available = false,
+                    Message = "Doctor is not available at this time"
+                });
+
+            var totalSlotDuration = schedule.ExaminationDurationMins + schedule.BreakDurationMins;
+
+            //check if the time is not in the past
+            if (date < DateTime.Now)
+                return (new AvailabilityResponse {
+                    Available = false,
+                    Message = "Cannot book appointments in the past"
+                });
+
+            //check if the doctor has any appointments at this time
+            var hasOverlap = appointments.Any(a =>
+                a.AppointmentDate.Date == date.Date &&
+                a.Status == AppointmentStatus.Scheduled &&
+                ((date >= a.AppointmentDate && date < a.AppointmentDate.AddMinutes(totalSlotDuration)) ||
+                (date.AddMinutes(totalSlotDuration) > a.AppointmentDate &&
+                 date.AddMinutes(totalSlotDuration) <= a.AppointmentDate.AddMinutes(totalSlotDuration)))
+            );
+            if (hasOverlap)
+                return (new AvailabilityResponse {
+                    Available = false,
+                    Message = "Doctor is not available at this time"
+                });
+
+            return (new AvailabilityResponse { Available = true, Message = "Doctor is available at this time" });
         }
     }
 }
