@@ -170,24 +170,8 @@ namespace Clinic_Sys.Services
 
 
 
-        //Book follow up appointment
-        public async Task<Appointment> BookFollowUpAppointment(Guid AppointmentId, DateTime date){
-            var appointment = await _context.Appointments.FindAsync(AppointmentId);
-            if (appointment == null)
-                return null;
-            var hasOverlap = await AvailableTimeSlot(appointment.DoctorId, date);
-            if (!hasOverlap.Available)
-                return null;
-            var followup = new Appointment{
-                DoctorId = appointment.DoctorId,
-                PatientId = appointment.PatientId,
-                AppointmentDate = date,
-                Status = AppointmentStatus.Scheduled
-            };
-            _context.Appointments.Add(followup);
-            await _context.SaveChangesAsync();
-            return followup;
-        }
+
+
 
         //Link appointment with follow up appointment
         public async Task<Appointment> LinkAppointmentWithFollowup(Guid AppointmentId, Guid FollowupId){

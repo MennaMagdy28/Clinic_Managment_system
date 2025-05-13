@@ -29,7 +29,6 @@ namespace Clinic_Sys.Controllers
         public async Task<ActionResult<MedicalRecord>> GetMedicalRecordByAppointmentId(Guid appointmentId)
         {
             var medicalRecord = await _context.MedicalRecords
-                .Include(m => m.AttendedAppointment)
                 .FirstOrDefaultAsync(m => m.AttendedAppointmentId == appointmentId);
 
             if (medicalRecord == null)
@@ -47,7 +46,9 @@ namespace Clinic_Sys.Controllers
         {
             _context.MedicalRecords.Add(medicalRecord);
             await _context.SaveChangesAsync();
-
+            var appointment = await _context.Appointments.FindAsync(medicalRecord.AttendedAppointmentId);
+            appointment.Status = AppointmentStatus.Completed;
+            await _context.SaveChangesAsync();
             return CreatedAtAction(nameof(GetMedicalRecordByAppointmentId), new { appointmentId = medicalRecord.AttendedAppointmentId }, medicalRecord);
         }
 
