@@ -42,6 +42,9 @@ namespace Clinic_Sys.Services
                 query = query.Where(a => a.AppointmentDate.Date == date.Value.Date);
             }
 
+            // Sort by AppointmentDate descending (most recent first)
+            query = query.OrderByDescending(a => a.AppointmentDate);
+
             return await query.ToListAsync();
         }
 

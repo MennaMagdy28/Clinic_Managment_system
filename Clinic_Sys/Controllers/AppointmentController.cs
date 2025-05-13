@@ -143,7 +143,6 @@ namespace Clinic_Sys.Controllers
             };
             _context.Appointments.Add(followup);
             await _context.SaveChangesAsync();
-
             var linked = await _appointmentService.LinkAppointmentWithFollowup(AppointmentId, followup.Id);
             return Ok(linked);
         }
