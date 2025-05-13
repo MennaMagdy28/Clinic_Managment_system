@@ -42,7 +42,10 @@ namespace Clinic_Sys.Controllers
             var schedule = await _scheduleService.GetScheduleByDate(doctorId, date);
             if (schedule == null)
             {
-                return NotFound();
+                // Fetch the doctor's name
+                var doctor = await _context.Doctors.Include(d => d.User).FirstOrDefaultAsync(d => d.Id == doctorId);
+                string doctorName = doctor?.User?.Name ?? "Unknown Doctor";
+                return NotFound(new { message = $"No schedule found for Dr. {doctorName} on {date:yyyy-MM-dd}." });
             }
             return Ok(schedule);
         }

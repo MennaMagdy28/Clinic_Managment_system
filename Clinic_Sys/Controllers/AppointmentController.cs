@@ -43,17 +43,6 @@ namespace Clinic_Sys.Controllers
             return appointment;
         }
 
-        // POST: api/Appointment
-        [HttpPost]
-        public async Task<ActionResult<Appointment>> CreateAppointment(Appointment appointment)
-        {
-            _context.Appointments.Add(appointment);
-            await _context.SaveChangesAsync();
-
-            return CreatedAtAction(nameof(GetAppointment), new { id = appointment.Id }, appointment);
-        }
-
-
         // DELETE: api/Appointment/5
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteAppointment(Guid id)
@@ -124,8 +113,17 @@ namespace Clinic_Sys.Controllers
 
 
         [HttpPost("appointments/doctor/{doctorId}/date/{date}")]
+        [AuthorizeRoles(UserRole.Patient)]
         public async Task<ActionResult<bool>> CreateAppointment(Guid doctorId, DateTime date)
         {
+            // Get current user ID from JWT
+            var userIdClaim = User.Claims.FirstOrDefault(c => c.Type == System.Security.Claims.ClaimTypes.NameIdentifier || c.Type == "sub");
+            if (userIdClaim == null)
+            {
+                return Unauthorized("User not found in token");
+            }
+            var userId = Guid.Parse(userIdClaim.Value);
+
             var hasOverlap = await AvailableTimeSlot(doctorId, date);
             if (!(hasOverlap.Value.Available))
             {
@@ -135,7 +133,7 @@ namespace Clinic_Sys.Controllers
             {
                 DoctorId = doctorId,
                 AppointmentDate = date,
-                PatientId = patientId,
+                PatientId = userId,
                 Status = AppointmentStatus.Scheduled
             };
             _context.Appointments.Add(appointment);
