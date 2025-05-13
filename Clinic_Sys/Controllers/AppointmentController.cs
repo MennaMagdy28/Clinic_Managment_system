@@ -125,7 +125,7 @@ namespace Clinic_Sys.Controllers
         public async Task<IActionResult> BookFollowUpAppointment(Guid AppointmentId, DateTime date)
         {
             var appointment = await GetAppointment(AppointmentId);
-            if (appointment == null || (appointment.Value.AppointmentDate > DateTime.Now && appointment.Value.Status == AppointmentStatus.Completed))
+            if (appointment == null || (appointment.Value.AppointmentDate > DateTime.Now && appointment.Value.Status != AppointmentStatus.Completed))
                 return BadRequest("Cannot book a follow up appointment for appointment that is not completed.");
 
             var hasOverlap = await _appointmentService.AvailableTimeSlot(appointment.Value.DoctorId, date);
