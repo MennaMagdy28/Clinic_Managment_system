@@ -118,6 +118,18 @@ namespace Clinic_Sys.Controllers
         }
 
 
+        //Booking follow up appointment
+        [HttpPost("appointments/followup")]
+        [AuthorizeRoles(UserRole.Admin)]
+        public async Task<IActionResult> BookFollowUpAppointment(Guid AppointmentId, DateTime date)
+        {
+            var appointment = await GetAppointment(AppointmentId);
+            var followup = await _appointmentService.BookFollowUpAppointment(AppointmentId, date);
+            var linked = await _appointmentService.LinkAppointmentWithFollowup(AppointmentId, followup.Id);
+            return Ok(linked);
+        }
+
+
 
         //cancel appointment
         [HttpPut("appointments/{id}/cancel")]
@@ -134,6 +146,16 @@ namespace Clinic_Sys.Controllers
             await _context.SaveChangesAsync();
             return Ok(appointment);
         }
-    }
 
+
+        [HttpGet("appointments/free-slots")]
+        [AuthorizeRoles(UserRole.Admin, UserRole.Patient)]
+        public async Task<IActionResult> GetFreeSlots(Guid doctorId, DateTime date)
+        {
+            var freeSlots = await _appointmentService.GetFreeSlots(doctorId, date);
+            return Ok(freeSlots);
+        }
+
+
+    }
 }

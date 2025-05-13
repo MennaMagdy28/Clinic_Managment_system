@@ -22,21 +22,14 @@ namespace Clinic_Sys.Controllers
             _context = context;
         }
 
-        // GET: api/MedicalRecord
-        [HttpGet]
-        public async Task<ActionResult<IEnumerable<MedicalRecord>>> GetMedicalRecords()
-        {
-            return await _context.MedicalRecords
-                .ToListAsync();
-        }
 
         // GET: api/MedicalRecord/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<MedicalRecord>> GetMedicalRecord(Guid id)
+        public async Task<ActionResult<MedicalRecord>> GetMedicalRecordByAppointmentId(Guid appointmentId)
         {
             var medicalRecord = await _context.MedicalRecords
                 .Include(m => m.AttendedAppointment)
-                .FirstOrDefaultAsync(m => m.Id == id);
+                .FirstOrDefaultAsync(m => m.AttendedAppointmentId == appointmentId);
 
             if (medicalRecord == null)
             {
@@ -48,6 +41,7 @@ namespace Clinic_Sys.Controllers
 
         // POST: api/MedicalRecord
         [HttpPost]
+        [AuthorizeRoles(UserRole.Doctor)]
         public async Task<ActionResult<MedicalRecord>> CreateMedicalRecord(MedicalRecord medicalRecord)
         {
             _context.MedicalRecords.Add(medicalRecord);
@@ -56,38 +50,10 @@ namespace Clinic_Sys.Controllers
             return CreatedAtAction(nameof(GetMedicalRecord), new { id = medicalRecord.Id }, medicalRecord);
         }
 
-        // PUT: api/MedicalRecord/5
-        [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateMedicalRecord(Guid id, MedicalRecord medicalRecord)
-        {
-            if (id != medicalRecord.Id)
-            {
-                return BadRequest();
-            }
-
-            _context.Entry(medicalRecord).State = EntityState.Modified;
-
-            try
-            {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!MedicalRecordExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
-
-            return NoContent();
-        }
 
         // DELETE: api/MedicalRecord/5
         [HttpDelete("{id}")]
+        [AuthorizeRoles(UserRole.Admin)]
         public async Task<IActionResult> DeleteMedicalRecord(Guid id)
         {
             var medicalRecord = await _context.MedicalRecords.FindAsync(id);
@@ -106,5 +72,6 @@ namespace Clinic_Sys.Controllers
         {
             return _context.MedicalRecords.Any(e => e.Id == id);
         }
+
     }
 } 

@@ -13,5 +13,7 @@ namespace Clinic_Sys.Services.Interfaces
         Task<List<Appointment>> GetFilteredAppointments(Guid? doctorId, DateTime? date);
         Task<List<TimeSlot>> GetAvailableTimeSlots(Guid doctorId, DateTime date);
         Task<AvailabilityResponse> AvailableTimeSlot(Guid doctorId, DateTime date);
+        Task<Appointment> BookFollowUpAppointment(Guid AppointmentId, DateTime date);
+        Task<Appointment> LinkAppointmentWithFollowup(Guid AppointmentId, Guid FollowupId);
     }
 }

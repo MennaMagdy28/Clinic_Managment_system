@@ -15,7 +15,7 @@ namespace Clinic_Sys.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    // [Authorize]
+    [Authorize]
     public class ReportController : ControllerBase
     {
         private readonly ApplicationDbContext _context;
@@ -28,10 +28,29 @@ namespace Clinic_Sys.Controllers
             _appointmentService = appointmentService;
         }
 
-        [HttpGet("appointments/")]
-        public async Task<IActionResult> GetAppointmentsByDoctorAndDate(Guid? doctorId, DateTime? date)
+        [HttpGet("appointments/grouped")]
+        [AuthorizeRoles(UserRole.Admin, UserRole.Doctor)]
+        public async Task<IActionResult> GetAppointmentsGroupedByStatus(Guid? doctorId, DateTime? date)
         {
+            // If the user is a doctor, force doctorId from claims
+            if (User.IsInRole(UserRole.Doctor))
+            {
+                doctorId = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier).Value;
+            }
             var appointments = await _appointmentService.GroupAndSortAppointments(doctorId, date);
+            return Ok(appointments);
+        }
+
+        [HttpGet("appointments/filtered")]
+        [AuthorizeRoles(UserRole.Admin, UserRole.Doctor)]
+        public async Task<IActionResult> GetFilteredAppointments(Guid? doctorId, DateTime? date)
+        {
+            // If the user is a doctor, force doctorId from claims
+            if (User.IsInRole(UserRole.Doctor))
+            {
+                doctorId = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier).Value;
+            }
+            var appointments = await _appointmentService.GetFilteredAppointments(doctorId, date);
             return Ok(appointments);
         }
     }

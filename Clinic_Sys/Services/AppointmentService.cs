@@ -160,5 +160,31 @@ namespace Clinic_Sys.Services
 
             return (new AvailabilityResponse { Available = true, Message = "Doctor is available at this time" });
         }
+
+        //Book follow up appointment
+        public async Task<Appointment> BookFollowUpAppointment(Guid AppointmentId, DateTime date){
+            var appointment = await GetAppointment(AppointmentId);
+            var hasOverlap = await AvailableTimeSlot(appointment.Value.DoctorId, date);
+            if (!hasOverlap.Available)
+                return BadRequest($"{hasOverlap.Message}. Please choose a different time.");
+            var followup = new Appointment{
+                DoctorId = appointment.Value.DoctorId,
+                PatientId = appointment.Value.PatientId,
+                AppointmentDate = date,
+                Status = AppointmentStatus.Scheduled
+            };
+            _context.Appointments.Add(followup);
+            await _context.SaveChangesAsync();
+            return followup;
+        }
+
+        //Link appointment with follow up appointment
+        public async Task<Appointment> LinkAppointmentWithFollowup(Guid AppointmentId, Guid FollowupId){
+            var appointment = await GetAppointment(AppointmentId);
+            appointment.Value.FollowupId = FollowupId;
+            await _context.SaveChangesAsync();
+            return appointment;
+        }
+
     }
 }
