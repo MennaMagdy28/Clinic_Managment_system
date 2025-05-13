@@ -44,12 +44,15 @@ namespace Clinic_Sys.Controllers
         [AuthorizeRoles(UserRole.Doctor)]
         public async Task<ActionResult<MedicalRecord>> CreateMedicalRecord(MedicalRecord medicalRecord)
         {
+            var appointment = await _context.Appointments.FindAsync(medicalRecord.AttendedAppointmentId);
+            if (appointment == null || appointment.Status == AppointmentStatus.Cancelled)
+                return BadRequest("Cannot create medical record for an appointment that is cancelled or not found.");
+
             _context.MedicalRecords.Add(medicalRecord);
             await _context.SaveChangesAsync();
-            var appointment = await _context.Appointments.FindAsync(medicalRecord.AttendedAppointmentId);
             appointment.Status = AppointmentStatus.Completed;
             await _context.SaveChangesAsync();
-            return CreatedAtAction(nameof(GetMedicalRecordByAppointmentId), new { appointmentId = medicalRecord.AttendedAppointmentId }, medicalRecord);
+            return Ok(medicalRecord);
         }
 
 
@@ -76,4 +79,4 @@ namespace Clinic_Sys.Controllers
         }
 
     }
-} 
+}

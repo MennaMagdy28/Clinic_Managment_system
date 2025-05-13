@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using Clinic_Sys.Models;
-
+using System.Text.Json.Serialization;
 namespace Clinic_Sys.Models
 {
 	public class MedicalRecord
@@ -18,6 +18,7 @@ namespace Clinic_Sys.Models
 
 		public string Prescription { get; set; }
 
+		[JsonIgnore]
 		public Appointment? AttendedAppointment { get; set; }
 
 	}
