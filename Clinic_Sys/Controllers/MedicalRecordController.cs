@@ -7,6 +7,7 @@ using System.Linq;
 using Clinic_Sys.Data;
 using Clinic_Sys.Authorization;
 using Microsoft.AspNetCore.Authorization;
+using Clinic_Sys.Enums;
 
 namespace Clinic_Sys.Controllers
 {
@@ -47,7 +48,7 @@ namespace Clinic_Sys.Controllers
             _context.MedicalRecords.Add(medicalRecord);
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction(nameof(GetMedicalRecord), new { id = medicalRecord.Id }, medicalRecord);
+            return CreatedAtAction(nameof(GetMedicalRecordByAppointmentId), new { appointmentId = medicalRecord.AttendedAppointmentId }, medicalRecord);
         }
 
 

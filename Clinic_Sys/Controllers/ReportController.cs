@@ -9,6 +9,7 @@ using Clinic_Sys.Services.Interfaces;
 using Clinic_Sys.Enums;
 using Clinic_Sys.Authorization;
 using Microsoft.AspNetCore.Authorization;
+using System.Security.Claims;
 
 
 namespace Clinic_Sys.Controllers
@@ -33,9 +34,9 @@ namespace Clinic_Sys.Controllers
         public async Task<IActionResult> GetAppointmentsGroupedByStatus(Guid? doctorId, DateTime? date)
         {
             // If the user is a doctor, force doctorId from claims
-            if (User.IsInRole(UserRole.Doctor))
+            if (User.IsInRole(UserRole.Doctor.ToString()))
             {
-                doctorId = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier).Value;
+                doctorId = Guid.Parse(User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier).Value);
             }
             var appointments = await _appointmentService.GroupAndSortAppointments(doctorId, date);
             return Ok(appointments);
@@ -46,9 +47,9 @@ namespace Clinic_Sys.Controllers
         public async Task<IActionResult> GetFilteredAppointments(Guid? doctorId, DateTime? date)
         {
             // If the user is a doctor, force doctorId from claims
-            if (User.IsInRole(UserRole.Doctor))
+            if (User.IsInRole(UserRole.Doctor.ToString()))
             {
-                doctorId = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier).Value;
+                doctorId = Guid.Parse(User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier).Value);
             }
             var appointments = await _appointmentService.GetFilteredAppointments(doctorId, date);
             return Ok(appointments);

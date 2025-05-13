@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using Clinic_Sys.Models;
+using Clinic_Sys.Models.DTOs;
 using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -152,7 +153,7 @@ namespace Clinic_Sys.Controllers
         [AuthorizeRoles(UserRole.Admin, UserRole.Patient)]
         public async Task<IActionResult> GetFreeSlots(Guid doctorId, DateTime date)
         {
-            var freeSlots = await _appointmentService.GetFreeSlots(doctorId, date);
+            var freeSlots = await _appointmentService.GetAvailableTimeSlots(doctorId, date);
             return Ok(freeSlots);
         }
 

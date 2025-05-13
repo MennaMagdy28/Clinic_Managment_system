@@ -1,10 +1,17 @@
+using Microsoft.AspNetCore.Mvc;
 using Clinic_Sys.Models;
 using Clinic_Sys.Models.DTOs;
-using Clinic_Sys.Services.Interfaces;
 using Microsoft.EntityFrameworkCore;
-using Clinic_Sys.Enums;
+using System.Collections.Generic;
+using System.Threading.Tasks;
+using System.Linq;
 using Clinic_Sys.Data;
-using System;
+using Clinic_Sys.Services.Interfaces;
+using Clinic_Sys.Enums;
+using Clinic_Sys.Authorization;
+using Microsoft.AspNetCore.Authorization;
+using System.Security.Claims;
+
 
 
 namespace Clinic_Sys.Services
@@ -161,15 +168,19 @@ namespace Clinic_Sys.Services
             return (new AvailabilityResponse { Available = true, Message = "Doctor is available at this time" });
         }
 
+
+
         //Book follow up appointment
         public async Task<Appointment> BookFollowUpAppointment(Guid AppointmentId, DateTime date){
-            var appointment = await GetAppointment(AppointmentId);
-            var hasOverlap = await AvailableTimeSlot(appointment.Value.DoctorId, date);
+            var appointment = await _context.Appointments.FindAsync(AppointmentId);
+            if (appointment == null)
+                return null;
+            var hasOverlap = await AvailableTimeSlot(appointment.DoctorId, date);
             if (!hasOverlap.Available)
-                return BadRequest($"{hasOverlap.Message}. Please choose a different time.");
+                return null;
             var followup = new Appointment{
-                DoctorId = appointment.Value.DoctorId,
-                PatientId = appointment.Value.PatientId,
+                DoctorId = appointment.DoctorId,
+                PatientId = appointment.PatientId,
                 AppointmentDate = date,
                 Status = AppointmentStatus.Scheduled
             };
@@ -180,8 +191,10 @@ namespace Clinic_Sys.Services
 
         //Link appointment with follow up appointment
         public async Task<Appointment> LinkAppointmentWithFollowup(Guid AppointmentId, Guid FollowupId){
-            var appointment = await GetAppointment(AppointmentId);
-            appointment.Value.FollowupId = FollowupId;
+            var appointment = await _context.Appointments.FindAsync(AppointmentId);
+            if (appointment == null)
+                return null;
+            appointment.FollowupId = FollowupId;
             await _context.SaveChangesAsync();
             return appointment;
         }
