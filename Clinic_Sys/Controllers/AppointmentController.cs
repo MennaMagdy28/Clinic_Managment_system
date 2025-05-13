@@ -15,7 +15,7 @@ namespace Clinic_Sys.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    [Authorize]
+    // [Authorize]
     public class AppointmentController : ControllerBase
     {
         private readonly ApplicationDbContext _context;
@@ -43,6 +43,7 @@ namespace Clinic_Sys.Controllers
             return appointment;
         }
 
+
         // DELETE: api/Appointment/5
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteAppointment(Guid id)
@@ -63,14 +64,14 @@ namespace Clinic_Sys.Controllers
         //custom methods
 
         [HttpGet("appointments/doctor/{doctorId}/date/{date}")]
-        public async Task<ActionResult<AvailabilityResponse>> AvailableTimeSlot(Guid doctorId, DateTime date)
+        public async Task<AvailabilityResponse> AvailableTimeSlot(Guid doctorId, DateTime date)
         {
             var appointments = await _appointmentService.GetFilteredAppointments(doctorId, date);
             var schedule = await _scheduleService.GetScheduleByDate(doctorId, date);
 
             //schedule is null if the doctor has no schedule for the day
             if (schedule == null)
-                return Ok(new AvailabilityResponse {
+                return (new AvailabilityResponse {
                     Available = false,
                     Message = "Doctor has no schedule for this day"
                 });
@@ -79,7 +80,7 @@ namespace Clinic_Sys.Controllers
             var dayStart = date.Date.Add(schedule.StartTime);
             var dayEnd = date.Date.Add(schedule.EndTime);
             if (date < dayStart || date > dayEnd)
-                return Ok(new AvailabilityResponse {
+                return (new AvailabilityResponse {
                     Available = false,
                     Message = "Doctor is not available at this time"
                 });
@@ -88,7 +89,7 @@ namespace Clinic_Sys.Controllers
 
             //check if the time is not in the past
             if (date < DateTime.Now)
-                return Ok(new AvailabilityResponse {
+                return (new AvailabilityResponse {
                     Available = false,
                     Message = "Cannot book appointments in the past"
                 });
@@ -102,12 +103,12 @@ namespace Clinic_Sys.Controllers
                  date.AddMinutes(totalSlotDuration) <= a.AppointmentDate.AddMinutes(totalSlotDuration)))
             );
             if (hasOverlap)
-                return Ok(new AvailabilityResponse {
+                return (new AvailabilityResponse {
                     Available = false,
                     Message = "Doctor is not available at this time"
                 });
 
-            return Ok(new AvailabilityResponse { Available = true, Message = "Doctor is available at this time" });
+            return (new AvailabilityResponse { Available = true, Message = "Doctor is available at this time" });
         }
 
 
@@ -125,15 +126,15 @@ namespace Clinic_Sys.Controllers
             var userId = Guid.Parse(userIdClaim.Value);
 
             var hasOverlap = await AvailableTimeSlot(doctorId, date);
-            if (!(hasOverlap.Value.Available))
+            if (!(hasOverlap.Available))
             {
-                return BadRequest($"{hasOverlap.Value.Message}. Please choose a different time.");
+                return BadRequest($"{hasOverlap.Message}. Please choose a different time.");
             }
             var appointment = new Appointment
             {
                 DoctorId = doctorId,
                 AppointmentDate = date,
-                PatientId = userId,
+                PatientId = Guid.Parse("f8722580-d8b1-4f9a-a7ce-4950d387b9c9"),
                 Status = AppointmentStatus.Scheduled
             };
             _context.Appointments.Add(appointment);
@@ -151,9 +152,9 @@ namespace Clinic_Sys.Controllers
             var appointment = await GetAppointment(id);
 
             var hasOverlap = await AvailableTimeSlot(appointment.Value.DoctorId, newDate);
-            if (!(hasOverlap.Value.Available))
+            if (hasOverlap == null || !(hasOverlap.Available))
             {
-                return BadRequest($"{hasOverlap.Value.Message}. Please choose a different time.");
+                return BadRequest($"{hasOverlap.Message}. Please choose a different time.");
             }
 
             appointment.Value.AppointmentDate = newDate;
