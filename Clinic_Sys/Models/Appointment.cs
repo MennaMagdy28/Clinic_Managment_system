@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using Clinic_Sys.Enums;
+using System.Text.Json.Serialization;
 
 namespace Clinic_Sys.Models
 {
@@ -28,8 +29,10 @@ namespace Clinic_Sys.Models
 
 		public Patient? Patient { get; set; }
 		public Doctor? Doctor { get; set; }
+		[JsonIgnore]
 		public Appointment? FollowupAppointment { get; set; }
-		public virtual ICollection<Appointment> FollowupAppointments { get; set; } = new List<Appointment>();
+		[JsonIgnore]
+		public ICollection<Appointment>? FollowupAppointments { get; set; }
 		public MedicalRecord? MedicalRecord { get; set; }
 	}
 }
