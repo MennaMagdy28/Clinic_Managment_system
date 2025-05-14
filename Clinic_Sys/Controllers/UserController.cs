@@ -55,8 +55,6 @@ namespace Clinic_Sys.Controllers
             }
 
             var user = await _context.Users
-                .Include(u => u.Doctor)
-                .Include(u => u.Patient)
                 .FirstOrDefaultAsync(u => u.Id == id);
 
             if (user == null)

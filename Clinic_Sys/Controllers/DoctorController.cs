@@ -38,9 +38,6 @@ namespace Clinic_Sys.Controllers
         public async Task<ActionResult<Doctor>> GetDoctor(Guid id)
         {
             var doctor = await _context.Doctors
-                .Include(d => d.Appointments)
-                .Include(d => d.Schedules)
-                .Include(d => d.ChatSessions)
                 .FirstOrDefaultAsync(d => d.Id == id);
 
             if (doctor == null)
