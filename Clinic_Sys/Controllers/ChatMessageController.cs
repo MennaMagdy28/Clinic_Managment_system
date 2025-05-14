@@ -79,6 +79,7 @@ namespace Clinic_Sys.Controllers
             await _context.SaveChangesAsync();
 
             // Send the message to all clients in the chat session group
+
             await _hubContext.Clients.Group(message.SessionId.ToString())
                 .SendAsync("ReceiveMessage", message);
 
