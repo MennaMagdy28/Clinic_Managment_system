@@ -23,11 +23,19 @@ namespace Clinic_Sys.Controllers
         }
 
         // GET: api/MedicalRecord
-        [HttpGet]
-        public async Task<ActionResult<IEnumerable<MedicalRecord>>> GetMedicalRecords()
+        [HttpGet("patient/{patientId}")]
+        public async Task<ActionResult<IEnumerable<MedicalRecord>>> GetMedicalRecordsByPatientId(Guid patientId)
         {
-            return await _context.MedicalRecords
+            //get appointments id from patient id
+            var appointments = await _context.Appointments
+                .Where(a => a.PatientId == patientId)
                 .ToListAsync();
+            var appointmentIds = appointments.Select(a => a.Id).ToList();
+            var medicalRecords = await _context.MedicalRecords
+                .Where(m => appointmentIds.Contains(m.AttendedAppointmentId))
+                .ToListAsync();
+
+            return medicalRecords;
         }
 
         // GET: api/MedicalRecord/5

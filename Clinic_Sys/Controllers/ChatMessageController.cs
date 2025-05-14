@@ -10,6 +10,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.SignalR;
 using Clinic_Sys.Hubs;
 
+
 namespace Clinic_Sys.Controllers
 {
     [Route("api/[controller]")]
@@ -79,7 +80,6 @@ namespace Clinic_Sys.Controllers
             await _context.SaveChangesAsync();
 
             // Send the message to all clients in the chat session group
-
             await _hubContext.Clients.Group(message.SessionId.ToString())
                 .SendAsync("ReceiveMessage", message);
 
@@ -108,8 +108,7 @@ namespace Clinic_Sys.Controllers
             await _context.SaveChangesAsync();
 
             // Notify all clients in the chat session that the message has been seen
-            await _hubContext.Clients.Group(message.SessionId.ToString())
-                .SendAsync("MessageSeen", id);
+            await _hubContext.Clients.Group(message.SessionId.ToString()).SendAsync("MessageSeen", id.ToString());
 
             return NoContent();
         }
