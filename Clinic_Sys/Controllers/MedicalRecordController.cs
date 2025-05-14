@@ -46,7 +46,7 @@ namespace Clinic_Sys.Controllers
         {
             var appointment = await _context.Appointments.FindAsync(medicalRecord.AttendedAppointmentId);
             if (appointment == null || appointment.Status == AppointmentStatus.Cancelled)
-                return BadRequest("Cannot create medical record for an appointment that is cancelled or not found.");
+                return BadRequest("Cannot create medical record for an appointment that is ca   ncelled or not found.");
 
             _context.MedicalRecords.Add(medicalRecord);
             await _context.SaveChangesAsync();
