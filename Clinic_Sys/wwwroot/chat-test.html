@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chat Test</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/6.0.1/signalr.min.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .chat-container {
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        .message-list {
+            height: 400px;
+            overflow-y: auto;
+            border: 1px solid #eee;
+            padding: 10px;
+            margin-bottom: 10px;
+        }
+        .message {
+            margin-bottom: 10px;
+            padding: 10px;
+            border-radius: 5px;
+        }
+        .message.sent {
+            background-color: #e3f2fd;
+            margin-left: 20%;
+        }
+        .message.received {
+            background-color: #f5f5f5;
+            margin-right: 20%;
+        }
+        .message-input {
+            display: flex;
+            gap: 10px;
+        }
+        .message-input input {
+            flex: 1;
+            padding: 8px;
+        }
+        .message-input button {
+            padding: 8px 16px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .message-input button:hover {
+            background-color: #0056b3;
+        }
+        .status {
+            color: #666;
+            font-style: italic;
+            margin-bottom: 10px;
+        }
+        .controls {
+            margin-bottom: 20px;
+        }
+        .controls input {
+            padding: 8px;
+            margin-right: 10px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Chat Test</h1>
+    
+    <div class="controls">
+        <input type="text" id="sessionId" placeholder="Session ID" />
+        <input type="text" id="userId" placeholder="User ID" />
+        <input type="text" id="token" placeholder="JWT Token" />
+        <button onclick="joinSession()">Join Session</button>
+        <button onclick="leaveSession()">Leave Session</button>
+    </div>
+
+    <div class="chat-container">
+        <div class="status" id="connectionStatus">Disconnected</div>
+        <div class="message-list" id="messageList"></div>
+        <div class="message-input">
+            <input type="text" id="messageInput" placeholder="Type your message..." />
+            <button onclick="sendMessage()">Send</button>
+        </div>
+    </div>
+
+    <script>
+        let connection = null;
+        let currentSessionId = null;
+        let currentUserId = null;
+
+        async function startConnection() {
+            connection = new signalR.HubConnectionBuilder()
+                .withUrl("/hubs/chat", {
+                    accessTokenFactory: () => document.getElementById('token').value
+                })
+                .withAutomaticReconnect()
+                .build();
+
+            connection.on("ReceiveMessage", (message) => {
+                addMessage(message, false);
+            });
+
+            connection.on("MessageSeen", (messageId) => {
+                const messageElement = document.querySelector(`[data-message-id="${messageId}"]`);
+                if (messageElement) {
+                    messageElement.classList.add('seen');
+                }
+            });
+
+            connection.on("MessageDeleted", (messageId) => {
+                const messageElement = document.querySelector(`[data-message-id="${messageId}"]`);
+                if (messageElement) {
+                    messageElement.remove();
+                }
+            });
+
+            try {
+                await connection.start();
+                document.getElementById('connectionStatus').textContent = 'Connected';
+                document.getElementById('connectionStatus').style.color = 'green';
+            } catch (err) {
+                console.error(err);
+                document.getElementById('connectionStatus').textContent = 'Connection failed';
+                document.getElementById('connectionStatus').style.color = 'red';
+            }
+        }
+
+        async function joinSession() {
+            if (!connection) {
+                await startConnection();
+            }
+
+            currentSessionId = document.getElementById('sessionId').value;
+            currentUserId = document.getElementById('userId').value;
+
+            if (!currentSessionId || !currentUserId) {
+                alert('Please enter both Session ID and User ID');
+                return;
+            }
+
+            try {
+                await connection.invoke("JoinChatSession", currentSessionId);
+                document.getElementById('connectionStatus').textContent = `Connected to session: ${currentSessionId}`;
+            } catch (err) {
+                console.error(err);
+                alert('Failed to join session');
+            }
+        }
+
+        async function leaveSession() {
+            if (connection && currentSessionId) {
+                try {
+                    await connection.invoke("LeaveChatSession", currentSessionId);
+                    currentSessionId = null;
+                    document.getElementById('connectionStatus').textContent = 'Connected';
+                } catch (err) {
+                    console.error(err);
+                }
+            }
+        }
+
+        async function sendMessage() {
+            if (!connection || !currentSessionId || !currentUserId) {
+                alert('Please join a session first');
+                return;
+            }
+
+            const messageInput = document.getElementById('messageInput');
+            const messageText = messageInput.value.trim();
+            const token = document.getElementById('token').value;
+
+            if (!messageText) return;
+
+            const message = {
+                sessionId: currentSessionId,
+                senderId: currentUserId,
+                message: messageText,
+                timestamp: new Date().toISOString()
+            };
+
+            try {
+                await fetch('/api/ChatMessage', {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': 'Bearer ' + token,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(message)
+                });
+                messageInput.value = '';
+            } catch (err) {
+                console.error(err);
+                alert('Failed to send message');
+            }
+        }
+
+        function addMessage(message, isSent) {
+            const messageList = document.getElementById('messageList');
+            const messageElement = document.createElement('div');
+            messageElement.className = `message ${isSent ? 'sent' : 'received'}`;
+            messageElement.setAttribute('data-message-id', message.id);
+            
+            const time = new Date(message.timestamp).toLocaleTimeString();
+            messageElement.innerHTML = `
+                <div class="message-content">${message.message}</div>
+                <div class="message-time">${time}</div>
+            `;
+            
+            messageList.appendChild(messageElement);
+            messageList.scrollTop = messageList.scrollHeight;
+        }
+
+        // Handle Enter key in message input
+        document.getElementById('messageInput').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                sendMessage();
+            }
+        });
+    </script>
+</body>
+</html> 
