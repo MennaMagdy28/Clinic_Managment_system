@@ -90,8 +90,8 @@ namespace Clinic_Sys.Controllers
         [HttpPut("{id}/seen")]
         public async Task<IActionResult> MarkMessageAsSeen(Guid id)
         {
-            var userId = User.FindFirst("sub")?.Value;
-            if (string.IsNullOrEmpty(userId))
+            var userId = Guid.Parse(User.Claims.FirstOrDefault(c => c.Type == System.Security.Claims.ClaimTypes.NameIdentifier || c.Type == "sub").Value);
+            if (userId == Guid.Empty)
                 return Unauthorized();
 
             var message = await _context.ChatMessages
@@ -101,7 +101,7 @@ namespace Clinic_Sys.Controllers
             if (message == null)
                 return NotFound();
 
-            if (message.Session.PatientId.ToString() != userId && message.Session.DoctorId.ToString() != userId)
+            if (message.Session.PatientId != userId && message.Session.DoctorId != userId)
                 return Forbid();
 
             message.Seen = true;
@@ -118,8 +118,8 @@ namespace Clinic_Sys.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteMessage(Guid id)
         {
-            var userId = User.FindFirst("sub")?.Value;
-            if (string.IsNullOrEmpty(userId))
+            var userId =  Guid.Parse(User.Claims.FirstOrDefault(c => c.Type == System.Security.Claims.ClaimTypes.NameIdentifier || c.Type == "sub").Value);
+            if (userId == Guid.Empty)
                 return Unauthorized();
 
             var message = await _context.ChatMessages
@@ -129,7 +129,7 @@ namespace Clinic_Sys.Controllers
             if (message == null)
                 return NotFound();
 
-            if (message.SenderId.ToString() != userId)
+            if (message.SenderId != userId)
                 return Forbid();
 
             _context.ChatMessages.Remove(message);
