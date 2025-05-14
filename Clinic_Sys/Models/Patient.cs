@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using Clinic_Sys.Enums;
-
+using System.Text.Json.Serialization;
 namespace Clinic_Sys.Models
 {
 	public class Patient
@@ -19,6 +19,7 @@ namespace Clinic_Sys.Models
 
 		public string ChronicDisease { get; set; }
 
+		[JsonIgnore]
 		public User? User { get; set; }
 		public virtual ICollection<Appointment> Appointments { get; set; } = new List<Appointment>();
 		public virtual ICollection<ChatSession> ChatSessions { get; set; } = new List<ChatSession>();

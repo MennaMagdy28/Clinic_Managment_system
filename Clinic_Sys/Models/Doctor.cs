@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using Clinic_Sys.Models;
-
+using System.Text.Json.Serialization;
 namespace Clinic_Sys.Models
 {
 	public class Doctor
@@ -17,7 +17,7 @@ namespace Clinic_Sys.Models
 		[Required]
 		public int RoomNumber { get; set; }
 
-
+		[JsonIgnore]
 		public User? User { get; set; }
 		public virtual ICollection<Appointment> Appointments { get; set; } = new List<Appointment>();
 		public virtual ICollection<Schedule> Schedules { get; set; } = new List<Schedule>();

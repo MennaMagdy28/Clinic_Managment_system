@@ -33,8 +33,6 @@ namespace Clinic_Sys.Controllers
         public async Task<ActionResult<IEnumerable<User>>> GetUsers()
         {
             return await _context.Users
-                .Include(u => u.Doctor)
-                .Include(u => u.Patient)
                 .ToListAsync();
         }
 
@@ -61,7 +59,16 @@ namespace Clinic_Sys.Controllers
             {
                 return NotFound();
             }
-
+            if (user.Role == UserRole.Doctor){
+                var doctor = await _context.Doctors
+                    .FirstOrDefaultAsync(d => d.Id == id);
+                user.Doctor = doctor;
+            }
+            if (user.Role == UserRole.Patient){
+                var patient = await _context.Patients
+                    .FirstOrDefaultAsync(p => p.Id == id);
+                user.Patient = patient;
+            }
             return user;
         }
 

@@ -18,10 +18,10 @@ namespace Clinic_Sys.Models
 		public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 		public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
 
-		[InverseProperty("User")]
+		[NotMapped]
 		public Doctor? Doctor { get; set; }
 
-		[InverseProperty("User")]
+		[NotMapped]
 		public Patient? Patient { get; set; }
 	}
 }
