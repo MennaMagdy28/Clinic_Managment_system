@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-
+using System.Text.Json.Serialization;
 namespace Clinic_Sys.Models
 {
 	public class ChatSession
@@ -22,7 +22,7 @@ namespace Clinic_Sys.Models
 
 		public Doctor? Doctor { get; set; }
 
-		[InverseProperty("Session")]
+		[InverseProperty("Session"), JsonIgnore]
 		public virtual ICollection<ChatMessage> Messages { get; set; } = new List<ChatMessage>();
 	}
 }

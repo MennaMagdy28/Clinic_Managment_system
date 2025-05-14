@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-
+using System.Text.Json.Serialization;
 namespace Clinic_Sys.Models
 {
 	public class ChatMessage
@@ -23,7 +23,10 @@ namespace Clinic_Sys.Models
 
 		public bool Seen { get; set; }
 
+		[JsonIgnore]
 		public ChatSession? Session { get; set; }
+
+		[JsonIgnore]
 		public User? Sender { get; set; }
 	}
 }

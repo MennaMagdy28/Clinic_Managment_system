@@ -24,6 +24,23 @@ namespace Clinic_Sys.Controllers
         }
 
 
+        // GET: api/MedicalRecord
+        [HttpGet("patient/{patientId}")]
+        public async Task<ActionResult<IEnumerable<MedicalRecord>>> GetMedicalRecordsByPatientId(Guid patientId)
+        {
+            //get appointments id from patient id
+            var appointments = await _context.Appointments
+                .Where(a => a.PatientId == patientId)
+                .ToListAsync();
+            var appointmentIds = appointments.Select(a => a.Id).ToList();
+            var medicalRecords = await _context.MedicalRecords
+                .Where(m => appointmentIds.Contains(m.AttendedAppointmentId))
+                .ToListAsync();
+
+            return medicalRecords;
+        }
+
+
         // GET: api/MedicalRecord/5
         [HttpGet("{id}")]
         public async Task<ActionResult<MedicalRecord>> GetMedicalRecordByAppointmentId(Guid appointmentId)
@@ -46,7 +63,7 @@ namespace Clinic_Sys.Controllers
         {
             var appointment = await _context.Appointments.FindAsync(medicalRecord.AttendedAppointmentId);
             if (appointment == null || appointment.Status == AppointmentStatus.Cancelled)
-                return BadRequest("Cannot create medical record for an appointment that is ca   ncelled or not found.");
+                return BadRequest("Cannot create medical record for an appointment that is cancelled or not found.");
 
             _context.MedicalRecords.Add(medicalRecord);
             await _context.SaveChangesAsync();
