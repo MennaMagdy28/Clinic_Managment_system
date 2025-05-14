@@ -30,8 +30,8 @@ namespace Clinic_Sys.Controllers
         [HttpGet("session/{sessionId}")]
         public async Task<ActionResult<IEnumerable<ChatMessage>>> GetMessagesForSession(Guid sessionId)
         {
-            var userId = User.FindFirst("sub")?.Value;
-            if (string.IsNullOrEmpty(userId))
+            var userId = Guid.Parse(User.Claims.FirstOrDefault(c => c.Type == System.Security.Claims.ClaimTypes.NameIdentifier || c.Type == "sub").Value);
+            if (userId == Guid.Empty)
                 return Unauthorized();
 
             var session = await _context.ChatSessions
@@ -40,7 +40,7 @@ namespace Clinic_Sys.Controllers
             if (session == null)
                 return NotFound();
 
-            if (session.PatientId.ToString() != userId && session.DoctorId.ToString() != userId)
+            if (session.PatientId != userId && session.DoctorId != userId)
                 return Forbid();
 
             var messages = await _context.ChatMessages
@@ -56,11 +56,11 @@ namespace Clinic_Sys.Controllers
         [HttpPost]
         public async Task<ActionResult<ChatMessage>> CreateMessage(ChatMessage message)
         {
-            var userId = User.FindFirst("sub")?.Value;
-            if (string.IsNullOrEmpty(userId))
+            var userId = Guid.Parse(User.Claims.FirstOrDefault(c => c.Type == System.Security.Claims.ClaimTypes.NameIdentifier || c.Type == "sub").Value);
+            if (userId == Guid.Empty)
                 return Unauthorized();
 
-            if (message.SenderId.ToString() != userId)
+            if (message.SenderId != userId)
                 return Forbid();
 
             var session = await _context.ChatSessions
@@ -69,8 +69,8 @@ namespace Clinic_Sys.Controllers
             if (session == null)
                 return NotFound();
 
-            if (session.PatientId.ToString() != userId && session.DoctorId.ToString() != userId)
-                return Forbid();
+            if (session.PatientId != userId && session.DoctorId != userId)
+                return Forbid($"User {userId} is not part of the session {message.SessionId}");
 
             message.Timestamp = DateTime.UtcNow;
             message.Seen = false;
